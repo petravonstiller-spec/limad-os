@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Startet den grafischen LiMaD Windows-Installer.
+set -Eeuo pipefail
+# shellcheck source=/dev/null
+source /usr/share/limad-windows/wine-env.sh
+mkdir -p "$LIMAD_WIN_HOME"
+exec /usr/bin/python3 /usr/share/limad-windows/installer.py "$@"

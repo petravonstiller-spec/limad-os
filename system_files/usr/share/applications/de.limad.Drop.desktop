@@ -1,0 +1,19 @@
+[Desktop Entry]
+Actions=Update;
+Type=Application
+Name=LiDrop
+GenericName=Dateiübertragung
+Comment=Dateien direkt im lokalen Netzwerk senden und empfangen
+Exec=/usr/local/bin/limad-drop
+Icon=limad-drop
+Terminal=false
+Categories=Network;FileTransfer;
+StartupNotify=true
+StartupWMClass=de.limad.Drop
+Keywords=Dateien;Senden;Empfangen;Smartphone;QR;WLAN;
+X-LiMaD-Version=0.11.0-preview4
+
+[Desktop Action Update]
+Name=Nach Updates suchen
+Exec=/usr/local/bin/limad-updater --app de.limad.Drop
+Icon=system-software-update

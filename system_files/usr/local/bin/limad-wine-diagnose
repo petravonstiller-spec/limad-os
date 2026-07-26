@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -u
+source /usr/share/limad-windows/wine-env.sh
+LOG="${XDG_DATA_HOME:-$HOME/.local/share}/limad-windows/diagnose.log"
+mkdir -p "$(dirname "$LOG")"
+{ echo "LiMaD Wine Diagnose $(date -Is)"; echo "WINEPREFIX=$WINEPREFIX"; command -v wine || true; wine --version || true; echo "DISPLAY=${DISPLAY-} WAYLAND_DISPLAY=${WAYLAND_DISPLAY-} XDG_SESSION_TYPE=${XDG_SESSION_TYPE-}"; echo "--- packages ---"; rpm -q wine wine-core wine-mono mingw32-wine-gecko mingw64-wine-gecko wine-pulseaudio 2>&1 || true; echo "--- prefix ---"; if limad_win_init_prefix; then rc=0; else rc=$?; fi; echo "health_rc=$rc"; } 2>&1 | tee "$LOG"
+echo "Protokoll: $LOG"

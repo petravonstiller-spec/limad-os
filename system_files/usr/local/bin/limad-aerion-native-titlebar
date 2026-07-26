@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Preconfigures Aerion's native system title bar for the current user.
+# Aerion stores this preference in its per-user SQLite settings table.
+# Only the native_titlebar row is created or updated; all other data remains
+# untouched. The settings table is safe to pre-create because Aerion's own
+# migration uses CREATE TABLE IF NOT EXISTS.
+set -Eeuo pipefail
+
+readonly APP_ID="io.github.hkdb.Aerion"
+readonly DATA_DIR="${HOME}/.var/app/${APP_ID}/data/aerion"
+readonly DB_PATH="${DATA_DIR}/aerion.db"
+
+command -v python3 >/dev/null 2>&1 || {
+  echo "python3 missing; cannot preconfigure Aerion native title bar" >&2
+  exit 1
+}
+
+install -d -m 0700 "$DATA_DIR"
+python3 - "$DB_PATH" <<'PY'
+from __future__ import annotations
+
+import os
+import sqlite3
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+connection = sqlite3.connect(path, timeout=15)
+try:
+    connection.execute("PRAGMA busy_timeout = 15000")
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+        """
+    )
+    connection.execute(
+        """
+        INSERT INTO settings(key, value)
+        VALUES('native_titlebar', 'true')
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        """
+    )
+    connection.commit()
+finally:
+    connection.close()
+
+os.chmod(path, 0o600)
+PY
+
+echo "Aerion native title bar enabled for ${USER:-current user}"

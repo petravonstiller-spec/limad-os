@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -u
+APP_ID=com.github.wwmm.easyeffects
+SOCKET="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/EasyEffectsServer"
+flatpak info "$APP_ID" >/dev/null 2>&1 || exit 0
+/usr/local/bin/limad-install-klang-preset >/dev/null 2>&1 || true
+[[ -S "$SOCKET" ]] && exit 0
+exec flatpak run "$APP_ID" --gapplication-service

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+SOURCE="${LIMAD_KLANG_PRESET_SOURCE:-/usr/share/limad-klang/LiMaD Klang.json}"
+TARGET_DIR="${HOME}/.var/app/com.github.wwmm.easyeffects/config/easyeffects/output"
+TARGET="${TARGET_DIR}/LiMaD Klang.json"
+[[ -f "$SOURCE" ]] || exit 1
+mkdir -p "$TARGET_DIR"
+if [[ ! -f "$TARGET" ]] || ! cmp -s "$SOURCE" "$TARGET"; then
+  install -m 0644 "$SOURCE" "$TARGET"
+fi

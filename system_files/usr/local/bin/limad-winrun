@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Runs a Windows program inside the LiMaD Wine prefix.
+# Used by the generated menu entries and as the handler for .exe/.msi files.
+set -Eeuo pipefail
+
+# shellcheck source=/dev/null
+source /usr/share/limad-windows/wine-env.sh
+
+notify_error() {
+  if command -v zenity >/dev/null 2>&1; then
+    zenity --error --title="LiMaD Windows" --text="$1" --icon-name=de.limad.WindowsApps 2>/dev/null || true
+  fi
+  echo "$1" >&2
+}
+
+if ! limad_win_have_wine; then
+  notify_error "Wine ist in diesem Systemabbild nicht enthalten."
+  exit 127
+fi
+
+TARGET="${1:-}"
+if [[ -z "$TARGET" ]]; then
+  exec /usr/local/bin/limad-windows-setup
+fi
+shift || true
+
+# Accept file:// URIs from the file manager as well as plain paths.
+if [[ "$TARGET" == file://* ]]; then
+  TARGET="$(python3 -c 'import sys,urllib.parse;print(urllib.parse.unquote(urllib.parse.urlparse(sys.argv[1]).path))' "$TARGET")"
+fi
+
+if [[ ! -f "$TARGET" ]]; then
+  notify_error "Datei nicht gefunden: $TARGET"
+  exit 2
+fi
+
+if ! limad_win_init_prefix; then
+  notify_error "Das Windows-Profil konnte nicht angelegt werden."
+  exit 3
+fi
+
+cd "$(dirname "$TARGET")"
+case "${TARGET,,}" in
+  *.msi) exec wine msiexec /i "$TARGET" "$@" ;;
+  *.bat|*.cmd) exec wine cmd /c "$TARGET" "$@" ;;
+  *) exec wine "$TARGET" "$@" ;;
+esac

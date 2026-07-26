@@ -1,0 +1,62 @@
+{
+  "format_version": 2,
+  "apps": [
+    {
+      "app_id": "de.limad.Cut",
+      "name": "LiMaD Cut",
+      "launcher": "/usr/local/bin/limad-cut",
+      "system_root": "/usr/share/limad-cut",
+      "system_version_file": "/usr/share/limad-cut/VERSION",
+      "required": [
+        "native_shell.py",
+        "VERSION"
+      ],
+      "restart_user_services": []
+    },
+    {
+      "app_id": "de.limad.Study",
+      "name": "LiMaD Study",
+      "launcher": "/usr/local/bin/limad-study",
+      "system_root": "/usr/share/limad-study",
+      "system_version_file": "/usr/share/limad-study/VERSION",
+      "required": [
+        "src/limad_study/__main__.py",
+        "web/index.html",
+        "VERSION"
+      ],
+      "post_install": "study-prepare",
+      "restart_user_services": []
+    },
+    {
+      "app_id": "de.limad.Drop",
+      "name": "LiDrop",
+      "launcher": "/usr/local/bin/limad-drop",
+      "system_root": "/usr/share/limad-drop",
+      "system_version_file": "/usr/share/limad-drop/VERSION",
+      "required": [
+        "limad_dropd.py",
+        "shell.py",
+        "VERSION"
+      ],
+      "restart_user_services": [
+        "limad-drop.service",
+        "limad-airdrop.timer"
+      ]
+    },
+    {
+      "app_id": "de.limad.AnycubicSlicerNext",
+      "name": "Anycubic Slicer Next",
+      "launcher": "/usr/bin/anycubicslicernext",
+      "system_root": "/usr/lib/limad/apps/anycubic-slicer-next",
+      "system_version": "1.3.96",
+      "required": [
+        "bin/AnycubicSlicerNext",
+        "resources"
+      ],
+      "restart_user_services": [],
+      "executables": [
+        "bin/AnycubicSlicerNext"
+      ]
+    }
+  ]
+}
